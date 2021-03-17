@@ -1,4 +1,5 @@
 import { Layout as AntLayout } from 'antd'
+
 import styled from 'styled-components'
 import GoogleMap from './GoogleMap'
 const { Header, Content, Footer: AntComponent } = AntLayout
