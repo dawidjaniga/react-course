@@ -49,5 +49,7 @@ function useMapMediator () {
 export default function MapMediator () {
   useMapMediator()
 
+  debug('MapMediator component rendered')
+
   return null
 }
