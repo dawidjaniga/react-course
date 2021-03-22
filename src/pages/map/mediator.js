@@ -1,5 +1,6 @@
 import WikipediaApi from '../../services/api/wikipedia'
 import createDebug from 'debug'
+import { useMapStore } from './store'
 
 const debug = createDebug('wikipedia-map:map:mediator')
 
@@ -29,9 +30,24 @@ function attachListner (eventName, listener) {
   )
 }
 
+function mapWikipediaArtticlesToMarkers (articles) {
+  return articles.map(({ lat, lon, pageid }) => ({
+    lat,
+    lng: lon,
+    pageid
+  }))
+}
+
 function useMapMediator () {
+  const [, { addMarkers }] = useMapStore()
+
   async function mapDragged (center) {
-    const articles = await WikipediaApi.getArticles({ coord: center })
+    const response = await WikipediaApi.getArticles({
+      coord: center,
+      limit: 100
+    })
+    const articles = mapWikipediaArtticlesToMarkers(response.query.geosearch)
+    addMarkers(articles)
 
     debug('"mapDragged" listener fetched articles:', articles)
   }
