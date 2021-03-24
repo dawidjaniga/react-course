@@ -31,11 +31,12 @@ function attachListner (eventName, listener) {
   )
 }
 
-function mapWikipediaArtticlesToMarkers (articles) {
-  return articles.map(({ lat, lon, pageid }) => ({
+function mapWikipediaArticlesToMarkers (articles) {
+  return articles.map(({ lat, lon, pageid, title }) => ({
     lat,
     lng: lon,
-    pageid
+    pageid,
+    title
   }))
 }
 
@@ -47,7 +48,7 @@ function useMapMediator () {
       coord: center,
       limit: 100
     })
-    const articles = mapWikipediaArtticlesToMarkers(response.query.geosearch)
+    const articles = mapWikipediaArticlesToMarkers(response.query.geosearch)
     addMarkers(articles)
 
     debug('"mapDragged" listener fetched articles:', articles)

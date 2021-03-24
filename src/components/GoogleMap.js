@@ -37,7 +37,12 @@ export default function GoogleMap () {
         }}
       >
         {markers.map(marker => (
-          <Marker lat={marker.lat} lng={marker.lng} key={marker.pageid} />
+          <Marker
+            lat={marker.lat}
+            lng={marker.lng}
+            title={marker.title}
+            key={marker.pageid}
+          />
         ))}
       </GoogleMapReact>
     </div>
