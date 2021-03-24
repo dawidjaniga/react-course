@@ -5,6 +5,7 @@ import { useMapStore } from './store'
 const debug = createDebug('wikipedia-map:map:mediator')
 
 const listeners = {}
+let map
 
 export function emit (event, ...args) {
   const listener = listeners[event]
@@ -39,7 +40,7 @@ function mapWikipediaArtticlesToMarkers (articles) {
 }
 
 function useMapMediator () {
-  const [, { addMarkers }] = useMapStore()
+  const [, { addMarkers, setGoogleApiLoaded }] = useMapStore()
 
   async function mapDragged (center) {
     const response = await WikipediaApi.getArticles({
@@ -52,14 +53,18 @@ function useMapMediator () {
     debug('"mapDragged" listener fetched articles:', articles)
   }
 
-  async function mapLoaded (center) {
-    const articles = await WikipediaApi.getArticles({ coord: center })
+  function mapLoaded (mapInstance) {
+    map = mapInstance
+    setGoogleApiLoaded(true)
+  }
 
-    debug('"mapLoaded" listener fetched articles:', articles)
+  function searchBoxPlacesSelected (position) {
+    map.setCenter(position)
   }
 
   attachListner('mapLoaded', mapLoaded)
   attachListner('mapDragged', mapDragged)
+  attachListner('searchBoxPlacesSelected', searchBoxPlacesSelected)
 }
 
 export default function MapMediator () {

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import GoogleMapReact from 'google-map-react'
 import { emit } from '../pages/map/mediator'
 import createDebug from 'debug'
@@ -16,14 +16,15 @@ const defaultZoom = 14
 export default function GoogleMap () {
   const [{ markers }] = useMapStore()
 
-  useEffect(() => {
-    emit('mapLoaded', gdanskPosition)
-  }, [])
-
   return (
     <div style={{ height: '100vh', width: '100%' }}>
       <GoogleMapReact
-        bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_API_KEY }}
+        bootstrapURLKeys={{
+          key: process.env.REACT_APP_GOOGLE_API_KEY,
+          libraries: ['places']
+        }}
+        yesIWantToUseGoogleMapApiInternals
+        onGoogleApiLoaded={({ map, maps }) => emit('mapLoaded', map)}
         defaultCenter={gdanskPosition}
         defaultZoom={defaultZoom}
         onChange={event => {
@@ -31,6 +32,7 @@ export default function GoogleMap () {
             'map center changed. Emitting "mapDragged" event with map\'s center position: ',
             event.center
           )
+          // @TODO: Check if correct Map's event is used
           emit('mapDragged', event.center)
         }}
       >
