@@ -1,6 +1,7 @@
 import styled from 'styled-components'
 import React from 'react'
 import { Tooltip } from 'antd'
+import { emit } from '../pages/map/mediator'
 
 const Circle = styled.div`
   background-color: #ff7e23e0;
@@ -20,9 +21,13 @@ const Circle = styled.div`
 `
 
 export default function Marker ({ title }) {
+  function handleClick () {
+    emit('markerClicked', title)
+  }
+
   return (
     <Tooltip title={title}>
-      <Circle />
+      <Circle onClick={handleClick} />
     </Tooltip>
   )
 }

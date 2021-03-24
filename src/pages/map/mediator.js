@@ -41,7 +41,10 @@ function mapWikipediaArticlesToMarkers (articles) {
 }
 
 function useMapMediator () {
-  const [, { addMarkers, setGoogleApiLoaded }] = useMapStore()
+  const [
+    ,
+    { addMarkers, setGoogleApiLoaded, setModalVisible, setCurrentArticle }
+  ] = useMapStore()
 
   async function mapDragged (center) {
     const response = await WikipediaApi.getArticles({
@@ -60,12 +63,24 @@ function useMapMediator () {
   }
 
   function searchBoxPlacesSelected (position) {
-    map.setCenter(position)
+    if (map) {
+      map.setCenter(position)
+    }
+  }
+
+  async function markerClicked (title) {
+    const { query } = await WikipediaApi.getArticle({ title })
+    const articles = Object.values(query.pages)
+    const article = articles[0]
+
+    setCurrentArticle({ url: article.fullurl, title })
+    setModalVisible(true)
   }
 
   attachListner('mapLoaded', mapLoaded)
   attachListner('mapDragged', mapDragged)
   attachListner('searchBoxPlacesSelected', searchBoxPlacesSelected)
+  attachListner('markerClicked', markerClicked)
 }
 
 export default function MapMediator () {
