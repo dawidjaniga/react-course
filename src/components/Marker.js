@@ -3,12 +3,23 @@ import React from 'react'
 import { Tooltip } from 'antd'
 import { emit } from '../pages/map/mediator'
 
+const colors = {
+  orange: {
+    background: '#ff7e23e0',
+    shadow: '#ffa769'
+  },
+  blue: {
+    background: '#237bffe0',
+    shadow: '#698bff'
+  }
+}
+
 const Circle = styled.div`
-  background-color: #ff7e23e0;
+  background-color: ${({ color }) => colors[color].background};
   border-radius: 50%;
   width: 30px;
   height: 30px;
-  box-shadow: 0px 0px 5px #ffa769;
+  box-shadow: 0px 0px 5px ${({ color }) => colors[color].shadow};
   opacity: 0.7;
   transition: all 0.2s ease-in;
   cursor: pointer;
@@ -27,7 +38,7 @@ export default function Marker ({ title }) {
 
   return (
     <Tooltip title={title}>
-      <Circle onClick={handleClick} />
+      <Circle onClick={handleClick} color='blue' />
     </Tooltip>
   )
 }
