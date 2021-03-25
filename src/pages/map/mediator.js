@@ -1,8 +1,12 @@
 import WikipediaApi from '../../services/api/wikipedia'
 import createDebug from 'debug'
 import { useMapStore } from './store'
+import ArticlesDatabase from '../../services/ArticlesDatabase'
 
 const debug = createDebug('wikipedia-map:map:mediator')
+
+const readArticleColor = 'blue'
+const defaultArticleColor = 'orange'
 
 const listeners = {}
 let map
@@ -40,10 +44,26 @@ function mapWikipediaArticlesToMarkers (articles) {
   }))
 }
 
+function mapReadArticles (articles) {
+  return articles.map(({ title, ...rest }) => ({
+    ...rest,
+    title,
+    color: ArticlesDatabase.isArticleRead(title)
+      ? readArticleColor
+      : defaultArticleColor
+  }))
+}
+
 function useMapMediator () {
   const [
     ,
-    { addMarkers, setGoogleApiLoaded, setModalVisible, setCurrentArticle }
+    {
+      addMarkers,
+      setMarkerColor,
+      setGoogleApiLoaded,
+      setModalVisible,
+      setCurrentArticle
+    }
   ] = useMapStore()
 
   async function getArticlesForMapCenter () {
@@ -51,7 +71,8 @@ function useMapMediator () {
       coord: map.center.toJSON(),
       limit: 100
     })
-    const articles = mapWikipediaArticlesToMarkers(response.query.geosearch)
+    let articles = mapWikipediaArticlesToMarkers(response.query.geosearch)
+    articles = mapReadArticles(articles)
     addMarkers(articles)
 
     debug('"getArticlesForMapCenter" fetched articles:', articles)
@@ -79,6 +100,9 @@ function useMapMediator () {
 
     setCurrentArticle({ url: article.fullurl, title })
     setModalVisible(true)
+    setMarkerColor({ title, color: readArticleColor })
+
+    ArticlesDatabase.setArticleAsRead(title)
   }
 
   attachListner('mapLoaded', mapLoaded)

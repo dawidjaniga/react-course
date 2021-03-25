@@ -31,14 +31,18 @@ const Circle = styled.div`
   }
 `
 
-export default function Marker ({ title }) {
+export default function Marker ({ title, color }) {
   function handleClick () {
     emit('markerClicked', title)
   }
 
   return (
     <Tooltip title={title}>
-      <Circle onClick={handleClick} color='blue' />
+      <Circle onClick={handleClick} color={color} />
     </Tooltip>
   )
+}
+
+Marker.defaultProps = {
+  color: 'orange'
 }

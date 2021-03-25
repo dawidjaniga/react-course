@@ -34,6 +34,7 @@ export default function GoogleMap () {
             lat={marker.lat}
             lng={marker.lng}
             title={marker.title}
+            color={marker.color}
             key={marker.pageid}
           />
         ))}
