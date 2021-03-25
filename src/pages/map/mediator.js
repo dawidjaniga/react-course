@@ -46,19 +46,23 @@ function useMapMediator () {
     { addMarkers, setGoogleApiLoaded, setModalVisible, setCurrentArticle }
   ] = useMapStore()
 
-  async function mapDragged (center) {
+  async function getArticlesForMapCenter () {
     const response = await WikipediaApi.getArticles({
-      coord: center,
+      coord: map.center.toJSON(),
       limit: 100
     })
     const articles = mapWikipediaArticlesToMarkers(response.query.geosearch)
     addMarkers(articles)
 
-    debug('"mapDragged" listener fetched articles:', articles)
+    debug('"getArticlesForMapCenter" fetched articles:', articles)
   }
 
   function mapLoaded (mapInstance) {
     map = mapInstance
+
+    map.addListener('dragend', getArticlesForMapCenter)
+
+    getArticlesForMapCenter()
     setGoogleApiLoaded(true)
   }
 
@@ -78,7 +82,6 @@ function useMapMediator () {
   }
 
   attachListner('mapLoaded', mapLoaded)
-  attachListner('mapDragged', mapDragged)
   attachListner('searchBoxPlacesSelected', searchBoxPlacesSelected)
   attachListner('markerClicked', markerClicked)
 }
