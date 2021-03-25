@@ -1,8 +1,9 @@
 import React from 'react'
 import GoogleMapReact from 'google-map-react'
-import { emit } from '../pages/map/mediator'
-import Marker from './Marker'
-import { useMapStore } from '../pages/map/store'
+import { emit } from '../../pages/map/mediator'
+import Marker from '../Marker'
+import { useMapStore } from '../../pages/map/store'
+import styles from './styles'
 
 const gdanskPosition = {
   lat: 54.3478088,
@@ -24,6 +25,9 @@ export default function GoogleMap () {
         onGoogleApiLoaded={({ map, maps }) => emit('mapLoaded', map)}
         defaultCenter={gdanskPosition}
         defaultZoom={defaultZoom}
+        options={{
+          styles: styles.grey
+        }}
       >
         {markers.map(marker => (
           <Marker
