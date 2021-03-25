@@ -2,6 +2,7 @@ import WikipediaApi from '../../services/api/wikipedia'
 import createDebug from 'debug'
 import { useMapStore } from './store'
 import ArticlesDatabase from '../../services/ArticlesDatabase'
+import debounce from 'lodash/debounce'
 
 const debug = createDebug('wikipedia-map:map:mediator')
 
@@ -54,6 +55,8 @@ function mapReadArticles (articles) {
   }))
 }
 
+const callGetArticlesAfterLastInvocationMs = 1000
+
 function useMapMediator () {
   const [
     ,
@@ -65,6 +68,11 @@ function useMapMediator () {
       setCurrentArticle
     }
   ] = useMapStore()
+
+  const debouncedGetArticles = debounce(
+    getArticlesForMapCenter,
+    callGetArticlesAfterLastInvocationMs
+  )
 
   async function getArticlesForMapCenter () {
     const response = await WikipediaApi.getArticles({
@@ -80,10 +88,8 @@ function useMapMediator () {
 
   function mapLoaded (mapInstance) {
     map = mapInstance
+    map.addListener('idle', debouncedGetArticles)
 
-    map.addListener('dragend', getArticlesForMapCenter)
-
-    getArticlesForMapCenter()
     setGoogleApiLoaded(true)
   }
 
